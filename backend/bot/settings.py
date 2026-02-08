@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from localization.enums import AvailableLocalizations
+from localization.localization_data import AvailableLocalizations
 
 
 class BotSettings(BaseSettings):

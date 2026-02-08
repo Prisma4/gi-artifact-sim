@@ -4,10 +4,10 @@ from typing import List, Tuple, Dict, Type, Literal, Optional
 from artifacts.constants import ArtifactType, Stat, PercentStat, ArtifactValueType, ArtifactSet
 from artifacts.models import ArtifactSubStat, Artifact, ArtifactMainStat
 
-from localization.enums import BaseLocalization
-from localization.interface import Localization, logger
+from localization.localization_data import BaseLocalization
+from localization.interface import Localization
 
-localization_enum: Type[BaseLocalization] = Localization.get_localization_enum()
+localization: Type[BaseLocalization] = Localization.get_localization()
 
 
 class ArtifactValueInterface:
@@ -251,7 +251,7 @@ class ArtifactValueInterface:
 
 
 class ArtifactInterface:
-    _artifact_names = localization_enum.Artifacts.ARTIFACT_NAMES
+    _artifact_names = localization.Artifacts.ARTIFACT_NAMES
 
     @classmethod
     def _get_artifact_name(

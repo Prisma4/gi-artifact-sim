@@ -1,10 +1,10 @@
 import enum
 from typing import Type
 
-from localization.enums import BaseLocalization
+from localization.localization_data import BaseLocalization
 from localization.interface import Localization
 
-localization_enum: Type[BaseLocalization] = Localization.get_localization_enum()
+localization: Type[BaseLocalization] = Localization.get_localization()
 
 
 class KeyboardEnums(enum.Enum):
@@ -13,13 +13,13 @@ class KeyboardEnums(enum.Enum):
 
 
 class ReplyKeyboardEnums(enum.Enum):
-    ARTIFACTS = localization_enum.Keyboards.ROLL_ARTIFACTS
-    CHANGE_SET = localization_enum.Keyboards.CHANGE_ARTIFACT_SET
-    CHANGE_TYPE = localization_enum.Keyboards.CHANGE_ARTIFACT_TYPE
+    ARTIFACTS = localization.Keyboards.ROLL_ARTIFACTS
+    CHANGE_SET = localization.Keyboards.CHANGE_ARTIFACT_SET
+    CHANGE_TYPE = localization.Keyboards.CHANGE_ARTIFACT_TYPE
 
-    FORCE_MAIN_STAT = localization_enum.Keyboards.SET_FORCED_MAINSTAT
-    FORCE_SUB_STAT = localization_enum.Keyboards.SET_FORCED_SUBSTAT
-    FORCE_SUB_STAT_LUCK = localization_enum.Keyboards.SET_FORCED_SUBSTAT_LUCK
+    FORCE_MAIN_STAT = localization.Keyboards.SET_FORCED_MAINSTAT
+    FORCE_SUB_STAT = localization.Keyboards.SET_FORCED_SUBSTAT
+    FORCE_SUB_STAT_LUCK = localization.Keyboards.SET_FORCED_SUBSTAT_LUCK
 
 
 class ColorsEnums(enum.Enum):
@@ -33,10 +33,10 @@ class ColorsEnums(enum.Enum):
 
 
 class ArtifactLuck(enum.Enum):
-    WORST_LUCK = localization_enum.Keyboards.WORST_LUCK
-    AVERAGE_LUCK = localization_enum.Keyboards.AVERAGE_LUCK
-    GOOD_LUCK = localization_enum.Keyboards.GOOD_LUCK
-    BEST_LUCK = localization_enum.Keyboards.BEST_LUCK
+    WORST_LUCK = localization.Keyboards.WORST_LUCK
+    AVERAGE_LUCK = localization.Keyboards.AVERAGE_LUCK
+    GOOD_LUCK = localization.Keyboards.GOOD_LUCK
+    BEST_LUCK = localization.Keyboards.BEST_LUCK
 
 
 class PaginatorEnums(enum.Enum):

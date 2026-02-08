@@ -4,12 +4,12 @@ from typing import Type, List
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, \
     InlineKeyboardButton
 
-from artifacts.constants import ArtifactSet, ArtifactType, Stat, PercentStat
+from artifacts.constants import ArtifactType
 from bot.models import KeyboardEnums, ReplyKeyboardEnums, ArtifactLuck
-from localization.enums import BaseLocalization
+from localization.localization_data import BaseLocalization
 from localization.interface import Localization
 
-localization_enum: Type[BaseLocalization] = Localization.get_localization_enum()
+localization: Type[BaseLocalization] = Localization.get_localization()
 
 
 class ReplyKeyboards:
@@ -51,8 +51,8 @@ class InlineKeyboards:
             callback_data: str,
             page: int = 1,
             per_page: int = 5,
-            pagination_button_previous_text: str = localization_enum.Keyboards.PAGINATION_PREVIOUS,
-            pagination_button_next_text: str = localization_enum.Keyboards.PAGINATION_NEXT,
+            pagination_button_previous_text: str = localization.Keyboards.PAGINATION_PREVIOUS,
+            pagination_button_next_text: str = localization.Keyboards.PAGINATION_NEXT,
     ) -> InlineKeyboardMarkup:
         total_objects = len(objects)
         start_idx = (page - 1) * per_page
@@ -81,25 +81,25 @@ class InlineKeyboards:
     @staticmethod
     def get_sub_stat_luck_keyboard():
         keyboard = [
-            [InlineKeyboardButton(text=localization_enum.Keyboards.WORST_LUCK,
+            [InlineKeyboardButton(text=localization.Keyboards.WORST_LUCK,
                                   callback_data=ArtifactLuck.WORST_LUCK.value),
-             InlineKeyboardButton(text=localization_enum.Keyboards.AVERAGE_LUCK,
+             InlineKeyboardButton(text=localization.Keyboards.AVERAGE_LUCK,
                                   callback_data=ArtifactLuck.AVERAGE_LUCK.value)],
-            [InlineKeyboardButton(text=localization_enum.Keyboards.GOOD_LUCK,
+            [InlineKeyboardButton(text=localization.Keyboards.GOOD_LUCK,
                                   callback_data=ArtifactLuck.GOOD_LUCK.value),
-             InlineKeyboardButton(text=localization_enum.Keyboards.BEST_LUCK,
+             InlineKeyboardButton(text=localization.Keyboards.BEST_LUCK,
                                   callback_data=ArtifactLuck.BEST_LUCK.value)],
         ]
         return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
     @staticmethod
     def get_artifact_keyboard(is_max_level: bool = False):
-        base_keyboard = [InlineKeyboardButton(text=localization_enum.Keyboards.NEW_ARTIFACT,
+        base_keyboard = [InlineKeyboardButton(text=localization.Keyboards.NEW_ARTIFACT,
                                               callback_data=KeyboardEnums.REROLL.value)]
 
         if not is_max_level:
             keyboard = [
-                [InlineKeyboardButton(text=localization_enum.Keyboards.LEVEL_UP_ARTIFACT,
+                [InlineKeyboardButton(text=localization.Keyboards.LEVEL_UP_ARTIFACT,
                                       callback_data=KeyboardEnums.ARTIFACT_LEVEL_UP.value)],
                 base_keyboard,
             ]

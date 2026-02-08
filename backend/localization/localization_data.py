@@ -45,6 +45,10 @@ class BaseLocalization:
         CHOOSE_FORCED_MAINSTAT_SUCCESS = "Forced main stat successfully set to {}"
 
     class Artifacts:
+        ARTIFACT_MAIN_STAT_DELIMITER = ","
+        ARTIFACT_SUBSTAT_DELIMITER = ""
+        ARTIFACT_INACTIVE_SUBSTAT = "Inactive"
+
         class ArtifactType:
             FLOWER_OF_LIFE = "Flower of life"
             PLUME_OF_DEATH = "Plume of death"
@@ -171,6 +175,10 @@ class RuLocalization(BaseLocalization):
         CHOOSE_FORCED_MAINSTAT_SUCCESS = "Обязательный главный стат успешно установлен на {}"
 
     class Artifacts(BaseLocalization.Artifacts):
+        ARTIFACT_MAIN_STAT_DELIMITER = " "
+        ARTIFACT_SUBSTAT_DELIMITER = " "
+        ARTIFACT_INACTIVE_SUBSTAT = "Неактивно"
+
         class ArtifactType(BaseLocalization.Artifacts.ArtifactType):
             FLOWER_OF_LIFE = "Цветок жизни"
             PLUME_OF_DEATH = "Перо смерти"

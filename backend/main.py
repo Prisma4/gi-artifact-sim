@@ -1,9 +1,9 @@
 import asyncio
 
-from bot.handlers import handlers, artifact, artifact_set, artifact_type, artifact_forced_stats
+from bot.handlers import base, artifact, artifact_set, artifact_type, artifact_forced_stats
 from bot.main import dp, bot
 
-dp.include_routers(handlers.router)
+dp.include_routers(base.router)
 dp.include_routers(artifact.router)
 dp.include_routers(artifact_set.router)
 dp.include_routers(artifact_type.router)

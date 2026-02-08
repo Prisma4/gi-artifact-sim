@@ -3,7 +3,8 @@ from aiogram.fsm.context import FSMContext
 
 from artifacts.constants import Stat, PercentStat
 from bot.models import ArtifactLuck, PaginatorEnums
-from bot.handlers.handlers import localization_enum, logger, BotStates
+from bot.handlers.base import localization, logger
+from bot.states import BotStates
 from bot.keyboards.kb import InlineKeyboards
 from bot.models import ReplyKeyboardEnums
 
@@ -16,16 +17,16 @@ router = Router()
 @router.message(F.text == ReplyKeyboardEnums.FORCE_MAIN_STAT.value)
 async def force_main_stat(message: types.Message, state: FSMContext):
     try:
-        await message.answer(text=localization_enum.Messages.CHOOSE_FORCED_MAINSTAT,
+        await message.answer(text=localization.Messages.CHOOSE_FORCED_MAINSTAT,
                              reply_markup=InlineKeyboards.get_paginated_keyboard(
                                  objects=list(Stat) + list(PercentStat),
                                  callback_data=PaginatorEnums.ARTIFACT_MAIN_STAT.value,
                              ))
         await state.set_state(BotStates.waiting_for_forced_main_stat)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await message.edit_text(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG
+            text=localization.Messages.SOMETHING_WENT_WRONG
         )
 
 
@@ -42,13 +43,13 @@ async def set_artifact_main_stat(call: types.CallbackQuery, state: FSMContext):
 
         await state.update_data(forced_main_stat=forced_stat)
         await call.message.edit_text(
-            text=localization_enum.Messages.CHOOSE_FORCED_MAINSTAT_SUCCESS.format(forced_stat.value)
+            text=localization.Messages.CHOOSE_FORCED_MAINSTAT_SUCCESS.format(forced_stat.value)
         )
         await state.set_state(BotStates.main_state)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await call.answer(
-            localization_enum.Messages.SOMETHING_WENT_WRONG,
+            localization.Messages.SOMETHING_WENT_WRONG,
         )
 
 
@@ -61,7 +62,7 @@ async def show_artifact_main_stats_page(call: types.CallbackQuery, state: FSMCon
         page=page
     )
     await call.message.edit_text(
-        localization_enum.Messages.CHOOSE_FORCED_MAINSTAT,
+        localization.Messages.CHOOSE_FORCED_MAINSTAT,
         reply_markup=keyboard
     )
 
@@ -72,16 +73,16 @@ async def show_artifact_main_stats_page(call: types.CallbackQuery, state: FSMCon
 @router.message(F.text == ReplyKeyboardEnums.FORCE_SUB_STAT.value)
 async def force_sub_stat(message: types.Message, state: FSMContext):
     try:
-        await message.answer(text=localization_enum.Messages.CHOOSE_FORCED_SUBSTAT,
+        await message.answer(text=localization.Messages.CHOOSE_FORCED_SUBSTAT,
                              reply_markup=InlineKeyboards.get_paginated_keyboard(
                                  objects=list(Stat) + list(PercentStat),
                                  callback_data=PaginatorEnums.ARTIFACT_SUB_STAT.value,
                              ))
         await state.set_state(BotStates.waiting_for_forced_sub_stat)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await message.edit_text(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG
+            text=localization.Messages.SOMETHING_WENT_WRONG
         )
 
 
@@ -98,13 +99,13 @@ async def set_artifact_sub_stat(call: types.CallbackQuery, state: FSMContext):
 
         await state.update_data(forced_sub_stat=forced_stat)
         await call.message.edit_text(
-            text=localization_enum.Messages.CHOOSE_FORCED_SUBSTAT_SUCCESS.format(forced_stat.value)
+            text=localization.Messages.CHOOSE_FORCED_SUBSTAT_SUCCESS.format(forced_stat.value)
         )
         await state.set_state(BotStates.main_state)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await call.answer(
-            localization_enum.Messages.SOMETHING_WENT_WRONG,
+            localization.Messages.SOMETHING_WENT_WRONG,
         )
 
 
@@ -117,7 +118,7 @@ async def show_artifact_sub_stats_page(call: types.CallbackQuery, state: FSMCont
         page=page
     )
     await call.message.edit_text(
-        localization_enum.Messages.CHOOSE_FORCED_SUBSTAT,
+        localization.Messages.CHOOSE_FORCED_SUBSTAT,
         reply_markup=keyboard
     )
 
@@ -128,12 +129,12 @@ async def show_artifact_sub_stats_page(call: types.CallbackQuery, state: FSMCont
 @router.message(F.text == ReplyKeyboardEnums.FORCE_SUB_STAT_LUCK.value)
 async def change_sub_stat_luck(message: types.Message, state: FSMContext):
     try:
-        await message.answer(text=localization_enum.Messages.CHOOSE_FORCED_SUBSTAT_LUCK,
+        await message.answer(text=localization.Messages.CHOOSE_FORCED_SUBSTAT_LUCK,
                              reply_markup=InlineKeyboards.get_sub_stat_luck_keyboard())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await message.answer(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG,
+            text=localization.Messages.SOMETHING_WENT_WRONG,
         )
 
 
@@ -150,10 +151,10 @@ async def set_sub_stat_luck(call: types.CallbackQuery, state: FSMContext):
     try:
         await state.update_data(forced_sub_stat_luck=artifact_luck_mapping.get(call.data))
         await call.answer(
-            localization_enum.Messages.CHOOSE_FORCED_SUBSTAT_LUCK_SUCCESS.format(call.data)
+            localization.Messages.CHOOSE_FORCED_SUBSTAT_LUCK_SUCCESS.format(call.data)
         )
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await call.answer(
-            localization_enum.Messages.SOMETHING_WENT_WRONG,
+            localization.Messages.SOMETHING_WENT_WRONG,
         )

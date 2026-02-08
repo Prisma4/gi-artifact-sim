@@ -8,7 +8,7 @@ from artifacts.constants import ArtifactType, ArtifactSet, Stat, PercentStat
 from artifacts.interface import ArtifactInterface
 from artifacts.models import Artifact
 from bot.defs.artifact import ArtifactImageGenerator
-from bot.handlers.handlers import logger, localization_enum
+from bot.handlers.base import logger, localization
 from bot.keyboards.kb import InlineKeyboards
 from bot.models import ReplyKeyboardEnums, KeyboardEnums
 
@@ -48,11 +48,10 @@ async def handle_new_artifact(message: types.Message, state: FSMContext):
             photo=BufferedInputFile(artifact_image, filename="artifact.png"),
         )
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await message.answer(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG,
+            text=localization.Messages.SOMETHING_WENT_WRONG,
         )
-        raise e
 
 
 @router.callback_query(F.data.in_([KeyboardEnums.REROLL.value, ]))
@@ -67,11 +66,10 @@ async def handle_reroll(call: types.CallbackQuery, state: FSMContext):
 
         await call.answer()
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await call.answer(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG,
+            text=localization.Messages.SOMETHING_WENT_WRONG,
         )
-        raise e
 
 
 @router.callback_query(F.data.in_([KeyboardEnums.ARTIFACT_LEVEL_UP.value, ]))
@@ -97,7 +95,7 @@ async def handle_artifact_level_up(call: types.CallbackQuery, state: FSMContext)
             )
             if substat:
                 await call.answer(
-                    localization_enum.Messages.ARTIFACT_SUBSTAT_WAS_INCREASED.format(substat.stat.value, value_increase)
+                    localization.Messages.ARTIFACT_SUBSTAT_WAS_INCREASED.format(substat.stat.value, value_increase)
                 )
         await state.update_data(artifact_obj=artifact_obj)
 
@@ -110,8 +108,7 @@ async def handle_artifact_level_up(call: types.CallbackQuery, state: FSMContext)
         )
         await call.answer()
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         await call.answer(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG,
+            text=localization.Messages.SOMETHING_WENT_WRONG,
         )
-        raise e
