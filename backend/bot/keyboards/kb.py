@@ -1,11 +1,11 @@
-from typing import Type
+import enum
+from typing import Type, List
 
-import aiogram
-from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, \
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, \
     InlineKeyboardButton
 
-from artifacts.constants import ArtifactSet, ArtifactType
-from bot.models import KeyboardEnums, ReplyKeyboardEnums, PaginatorEnums, ArtifactLuck
+from artifacts.constants import ArtifactSet, ArtifactType, Stat, PercentStat
+from bot.models import KeyboardEnums, ReplyKeyboardEnums, ArtifactLuck
 from localization.enums import BaseLocalization
 from localization.interface import Localization
 
@@ -18,13 +18,13 @@ class ReplyKeyboards:
         keyboard = [
             [KeyboardButton(text=ReplyKeyboardEnums.ARTIFACTS.value)],
             [
-                [KeyboardButton(text=ReplyKeyboardEnums.CHANGE_SET.value)],
-                [KeyboardButton(text=ReplyKeyboardEnums.CHANGE_TYPE.value)],
+                KeyboardButton(text=ReplyKeyboardEnums.CHANGE_SET.value),
+                KeyboardButton(text=ReplyKeyboardEnums.CHANGE_TYPE.value),
             ],
             [KeyboardButton(text=ReplyKeyboardEnums.FORCE_MAIN_STAT.value)],
             [
-                [KeyboardButton(text=ReplyKeyboardEnums.FORCE_SUB_STAT.value)],
-                [KeyboardButton(text=ReplyKeyboardEnums.FORCE_SUB_STAT_LUCK.value)],
+                KeyboardButton(text=ReplyKeyboardEnums.FORCE_SUB_STAT.value),
+                KeyboardButton(text=ReplyKeyboardEnums.FORCE_SUB_STAT_LUCK.value),
             ]
         ]
         return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
@@ -46,64 +46,60 @@ class InlineKeyboards:
         return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
     @staticmethod
-    def get_artifact_set_keyboard(artifact_sets: Type[ArtifactSet] = ArtifactSet, page: int = 1,
-                                  sets_per_page: int = 10):
-        artifact_sets_list = list(artifact_sets)
-        total_sets = len(artifact_sets_list)
-        start_idx = (page - 1) * sets_per_page
-        end_idx = min(start_idx + sets_per_page, total_sets)
-        current_sets = artifact_sets_list[start_idx:end_idx]
+    def get_paginated_keyboard(
+            objects: List[enum.Enum],
+            callback_data: str,
+            page: int = 1,
+            per_page: int = 5,
+            pagination_button_previous_text: str = localization_enum.Keyboards.PAGINATION_PREVIOUS,
+            pagination_button_next_text: str = localization_enum.Keyboards.PAGINATION_NEXT,
+    ) -> InlineKeyboardMarkup:
+        total_objects = len(objects)
+        start_idx = (page - 1) * per_page
+        end_idx = min(start_idx + per_page, total_objects)
         keyboard = [
             [InlineKeyboardButton(
-                text=artifact_set.value,
-                callback_data=artifact_set.value
-            )] for artifact_set in current_sets
+                text=obj.value,
+                callback_data=obj.value
+            )] for obj in objects[start_idx:end_idx]
         ]
         navigation_buttons = []
         if page > 1:
             navigation_buttons.append(
-                InlineKeyboardButton(text=localization_enum.Keyboards.PAGINATION_PREVIOUS.value,
-                                     callback_data=f"{PaginatorEnums.ARTIFACT_SET_PREV.value}{page - 1}")
+                InlineKeyboardButton(text=pagination_button_previous_text,
+                                     callback_data=f"{callback_data}_{page - 1}")
             )
-        if end_idx < total_sets:
+        if end_idx < total_objects:
             navigation_buttons.append(
-                InlineKeyboardButton(text=localization_enum.Keyboards.PAGINATION_NEXT.value,
-                                     callback_data=f"{PaginatorEnums.ARTIFACT_SET_NEXT.value}{page + 1}")
+                InlineKeyboardButton(text=pagination_button_next_text,
+                                     callback_data=f"{callback_data}_{page + 1}")
             )
         if navigation_buttons:
             keyboard.append(navigation_buttons)
         return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
     @staticmethod
-    def get_main_stats_keyboard():
-        pass
-
-    @staticmethod
-    def get_sub_stats_keyboard():
-        pass
-
-    @staticmethod
     def get_sub_stat_luck_keyboard():
         keyboard = [
-            InlineKeyboardButton(text=localization_enum.Keyboards.WORST_LUCK.value,
-                                 callback_data=ArtifactLuck.WORST_LUCK.value),
-            InlineKeyboardButton(text=localization_enum.Keyboards.AVERAGE_LUCK.value,
-                                 callback_data=ArtifactLuck.AVERAGE_LUCK.value),
-            InlineKeyboardButton(text=localization_enum.Keyboards.GOOD_LUCK.value,
-                                 callback_data=ArtifactLuck.GOOD_LUCK.value),
-            InlineKeyboardButton(text=localization_enum.Keyboards.BEST_LUCK.value,
-                                 callback_data=ArtifactLuck.BEST_LUCK.value),
+            [InlineKeyboardButton(text=localization_enum.Keyboards.WORST_LUCK,
+                                  callback_data=ArtifactLuck.WORST_LUCK.value),
+             InlineKeyboardButton(text=localization_enum.Keyboards.AVERAGE_LUCK,
+                                  callback_data=ArtifactLuck.AVERAGE_LUCK.value)],
+            [InlineKeyboardButton(text=localization_enum.Keyboards.GOOD_LUCK,
+                                  callback_data=ArtifactLuck.GOOD_LUCK.value),
+             InlineKeyboardButton(text=localization_enum.Keyboards.BEST_LUCK,
+                                  callback_data=ArtifactLuck.BEST_LUCK.value)],
         ]
         return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
     @staticmethod
     def get_artifact_keyboard(is_max_level: bool = False):
-        base_keyboard = [InlineKeyboardButton(text=localization_enum.Keyboards.NEW_ARTIFACT.value,
+        base_keyboard = [InlineKeyboardButton(text=localization_enum.Keyboards.NEW_ARTIFACT,
                                               callback_data=KeyboardEnums.REROLL.value)]
 
         if not is_max_level:
             keyboard = [
-                [InlineKeyboardButton(text=localization_enum.Keyboards.LEVEL_UP_ARTIFACT.value,
+                [InlineKeyboardButton(text=localization_enum.Keyboards.LEVEL_UP_ARTIFACT,
                                       callback_data=KeyboardEnums.ARTIFACT_LEVEL_UP.value)],
                 base_keyboard,
             ]

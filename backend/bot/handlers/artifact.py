@@ -1,14 +1,19 @@
-from aiogram import types, Router, F
+from typing import Optional, Literal
+
+from aiogram import types, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InputMediaPhoto, BufferedInputFile
 
-from artifacts.constants import ArtifactType, ArtifactSet
+from artifacts.constants import ArtifactType, ArtifactSet, Stat, PercentStat
 from artifacts.interface import ArtifactInterface
 from artifacts.models import Artifact
 from bot.defs.artifact import ArtifactImageGenerator
-from bot.handlers.handlers import router, logger, localization_enum
+from bot.handlers.handlers import logger, localization_enum
 from bot.keyboards.kb import InlineKeyboards
 from bot.models import ReplyKeyboardEnums, KeyboardEnums
+
+
+router = Router()
 
 
 async def generate_artifact_image_from_state(state: FSMContext):
@@ -17,7 +22,17 @@ async def generate_artifact_image_from_state(state: FSMContext):
     artifact_type: ArtifactType = state_data.get("artifact_type", ArtifactType.FLOWER_OF_LIFE)
     artifact_set: ArtifactSet = state_data.get("artifact_set", ArtifactSet.GLADIATORS_FINALE)
 
-    artifact_obj: Artifact = ArtifactInterface.generate_artifact_obj(artifact_type, artifact_set)
+    forced_main_stat: Optional[Stat | PercentStat] = state_data.get("forced_main_stat", None)
+    forced_sub_stat: Optional[Stat | PercentStat] = state_data.get("forced_sub_stat", None)
+    forced_sub_stat_luck: Optional[Stat | PercentStat] = state_data.get("forced_sub_stat_luck", None)
+
+    artifact_obj: Artifact = ArtifactInterface.generate_artifact_obj(
+        artifact_type=artifact_type,
+        artifact_set=artifact_set,
+        forced_main_stat=forced_main_stat,
+        forced_sub_stat=forced_sub_stat,
+        forced_sub_stat_luck=forced_sub_stat_luck,
+    )
     await state.update_data(artifact_obj=artifact_obj)
 
     return await ArtifactImageGenerator.generate_artifact_image(artifact_obj)
@@ -35,8 +50,9 @@ async def handle_new_artifact(message: types.Message, state: FSMContext):
     except Exception as e:
         logger.error(e)
         await message.answer(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG.value,
+            text=localization_enum.Messages.SOMETHING_WENT_WRONG,
         )
+        raise e
 
 
 @router.callback_query(F.data.in_([KeyboardEnums.REROLL.value, ]))
@@ -53,8 +69,9 @@ async def handle_reroll(call: types.CallbackQuery, state: FSMContext):
     except Exception as e:
         logger.error(e)
         await call.answer(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG.value,
+            text=localization_enum.Messages.SOMETHING_WENT_WRONG,
         )
+        raise e
 
 
 @router.callback_query(F.data.in_([KeyboardEnums.ARTIFACT_LEVEL_UP.value, ]))
@@ -64,18 +81,23 @@ async def handle_artifact_level_up(call: types.CallbackQuery, state: FSMContext)
         artifact_obj: Artifact = state_data.get('artifact_obj')
 
         if artifact_obj is None:
-            await call.answer(
-                text=localization_enum.Messages.SOMETHING_WENT_WRONG.value.format(
-                    localization_enum.Messages.ARTIFACT_NOT_FOUND.value
-                ),
-            )
-            return
+            raise ValueError("Artifact object was not found in the state")
+
+        if artifact_obj.level >= 20:
+            raise ValueError("Artifact level is already max")
+
+        forced_sub_stat: Optional[Stat | PercentStat] = state_data.get('forced_sub_stat', None)
+        forced_sub_stat_luck: Optional[Literal[0, 1, 2, 3]] = state_data.get('forced_sub_stat_luck', None)
 
         for i in range(4):
-            substat, value_increase = ArtifactInterface.raise_artifact_level(artifact_obj)
+            substat, value_increase = ArtifactInterface.raise_artifact_level(
+                artifact=artifact_obj,
+                forced_substat=forced_sub_stat,
+                forced_substat_luck=forced_sub_stat_luck,
+            )
             if substat:
                 await call.answer(
-                    localization_enum.Messages.ARTIFACT_SUBSTAT_WAS_INCREASED.value.format(substat.value, value_increase)
+                    localization_enum.Messages.ARTIFACT_SUBSTAT_WAS_INCREASED.format(substat.stat.value, value_increase)
                 )
         await state.update_data(artifact_obj=artifact_obj)
 
@@ -90,5 +112,6 @@ async def handle_artifact_level_up(call: types.CallbackQuery, state: FSMContext)
     except Exception as e:
         logger.error(e)
         await call.answer(
-            text=localization_enum.Messages.SOMETHING_WENT_WRONG.value,
+            text=localization_enum.Messages.SOMETHING_WENT_WRONG,
         )
+        raise e

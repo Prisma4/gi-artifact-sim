@@ -1,13 +1,13 @@
 import enum
 
 
-class AvailableLocalizations(enum.StrEnum):
+class AvailableLocalizations(enum.Enum):
     RU = "ru"
     EN = "en"
 
 
 class BaseLocalization:
-    class Keyboards(enum.StrEnum):
+    class Keyboards:
         ROLL_ARTIFACTS = "Roll artifacts"
         CHANGE_ARTIFACT_SET = "Choose artifact set"
         CHANGE_ARTIFACT_TYPE = "Choose artifact type"
@@ -22,12 +22,12 @@ class BaseLocalization:
         BEST_LUCK = "Best luck"
 
         NEW_ARTIFACT = "New artifact"
-        LEVEL_UP_ARTIFACT = "Level up ( 4 )"
+        LEVEL_UP_ARTIFACT = "Level up ( +4 )"
 
         PAGINATION_NEXT = "Next page"
         PAGINATION_PREVIOUS = "Previous page"
 
-    class Messages(enum.StrEnum):
+    class Messages:
         START_MESSAGE = "Welcome to the Artifact Simulator, {}! \nCreator - @Prisma4"
         ARTIFACT_CHOOSE_TYPE = "Choose artifact type:"
         ARTIFACT_CHOOSE_TYPE_SUCCESS = 'Artifact type successfully set to "{}"!'
@@ -40,22 +40,25 @@ class BaseLocalization:
         CHOOSE_FORCED_SUBSTAT = "Choose forced substat:"
         CHOOSE_FORCED_SUBSTAT_LUCK = "Choose forced substat luck:"
         CHOOSE_FORCED_MAINSTAT = "Choose forced main stat:"
+        CHOOSE_FORCED_SUBSTAT_SUCCESS = "Forced substat successfully set to {}"
+        CHOOSE_FORCED_SUBSTAT_LUCK_SUCCESS = "Forced substat luck successfully set to {}"
+        CHOOSE_FORCED_MAINSTAT_SUCCESS = "Forced main stat successfully set to {}"
 
     class Artifacts:
-        class ArtifactType(enum.StrEnum):
+        class ArtifactType:
             FLOWER_OF_LIFE = "Flower of life"
             PLUME_OF_DEATH = "Plume of death"
             SANDS_OF_EON = "Sands of eon"
             GOBLET_OF_EONOTHEM = "Goblet of eonothem"
             CIRCLET_OF_LOGOS = "Circle of logos"
 
-        class Stat(enum.StrEnum):
+        class Stat:
             HP_FLAT = "HP"
             ATK_FLAT = 'ATK'
             DEFENCE_FLAT = "DEF"
             ELEMENTAL_MASTERY = "Elemental Mastery"
 
-        class Elements(enum.StrEnum):
+        class Elements:
             PYRO = "Pyro"
             ANEMO = "Anemo"
             CRYO = "Cryo"
@@ -65,7 +68,7 @@ class BaseLocalization:
             GEO = "Geo"
             PHYS = "Phys"
 
-        class PercentStat(enum.StrEnum):
+        class PercentStat:
             HP_PERCENT = "HP"
             ATK_PERCENT = 'ATK'
             DEFENCE_PERCENT = "DEF"
@@ -75,7 +78,7 @@ class BaseLocalization:
             HEAL_BONUS = "Heal Bonus"
             ELEMENTAL_DAMAGE = "{} DMG bonus"
 
-        class ArtifactSet(enum.StrEnum):
+        class ArtifactSet:
             GLADIATORS_FINALE = "Gladiator's Finale"
             WANDERERS_TROUPE = "Wanderer's Troupe"
             NOBLESSE_OBLIGE = "Noblesse Oblige"
@@ -130,18 +133,27 @@ class BaseLocalization:
 
 
 class RuLocalization(BaseLocalization):
-    class Keyboards(enum.StrEnum):
+    class Keyboards(BaseLocalization.Keyboards):
         ROLL_ARTIFACTS = "Крутить артефакты"
         CHANGE_ARTIFACT_SET = "Выбрать набор артефакта"
         CHANGE_ARTIFACT_TYPE = "Выбрать тип артефакта"
 
+        SET_FORCED_MAINSTAT = "Выбрать обязательный главный стат"
+        SET_FORCED_SUBSTAT = "Выбрать обязательный подстат"
+        SET_FORCED_SUBSTAT_LUCK = "Выбрать обязательную удачу подстата"
+
+        WORST_LUCK = "Худшая удача"
+        AVERAGE_LUCK = "Средняя удача"
+        GOOD_LUCK = "Нормальная удача"
+        BEST_LUCK = "Лучшая удача"
+
         NEW_ARTIFACT = "Новый артефакт"
-        LEVEL_UP_ARTIFACT = "Повысить уровень ( 4 )"
+        LEVEL_UP_ARTIFACT = "Повысить уровень ( +4 )"
 
         PAGINATION_NEXT = "Следующая страница"
         PAGINATION_PREVIOUS = "Предыдущая страница"
 
-    class Messages(enum.StrEnum):
+    class Messages(BaseLocalization.Messages):
         START_MESSAGE = "Добро пожаловать в симулятор артефактов, {}! \nСоздатель бота - @Prisma4"
         ARTIFACT_CHOOSE_TYPE = "Выберите тип артефакта:"
         ARTIFACT_CHOOSE_TYPE_SUCCESS = 'Тип артефакта успешно установлен на "{}"!'
@@ -151,22 +163,28 @@ class RuLocalization(BaseLocalization):
         SOMETHING_WENT_WRONG_SPECIFIED = "Что-то пошло не так: {}"
         ARTIFACT_NOT_FOUND = "Артефакт не найден!"
         ARTIFACT_SUBSTAT_WAS_INCREASED = "{} был повышен на {}!"
+        CHOOSE_FORCED_SUBSTAT = "Выберите обязательный подстат:"
+        CHOOSE_FORCED_SUBSTAT_LUCK = "Выберите обязательную удачу подстата:"
+        CHOOSE_FORCED_MAINSTAT = "Выберите обязательный главный стат:"
+        CHOOSE_FORCED_SUBSTAT_SUCCESS = "Обязательный подстат успешно установлен на {}"
+        CHOOSE_FORCED_SUBSTAT_LUCK_SUCCESS = "Обязательная удача подстата успешно установлена на {}"
+        CHOOSE_FORCED_MAINSTAT_SUCCESS = "Обязательный главный стат успешно установлен на {}"
 
-    class Artifacts:
-        class ArtifactType(enum.StrEnum):
+    class Artifacts(BaseLocalization.Artifacts):
+        class ArtifactType(BaseLocalization.Artifacts.ArtifactType):
             FLOWER_OF_LIFE = "Цветок жизни"
             PLUME_OF_DEATH = "Перо смерти"
             SANDS_OF_EON = "Пески времени"
             GOBLET_OF_EONOTHEM = "Кубок пространства"
             CIRCLET_OF_LOGOS = "Корона разума"
 
-        class Stat(enum.StrEnum):
+        class Stat(BaseLocalization.Artifacts.Stat):
             HP_FLAT = "HP"
             ATK_FLAT = 'Сила атаки'
             DEFENCE_FLAT = "Защита"
             ELEMENTAL_MASTERY = "Мастерство стихий"
 
-        class Elements(enum.StrEnum):
+        class Elements(BaseLocalization.Artifacts.Elements):
             PYRO = "Пиро"
             ANEMO = "Анемо"
             CRYO = "Крио"
@@ -176,7 +194,7 @@ class RuLocalization(BaseLocalization):
             GEO = "Гео"
             PHYS = "Физ"
 
-        class PercentStat(enum.StrEnum):
+        class PercentStat(BaseLocalization.Artifacts.PercentStat):
             HP_PERCENT = "HP"
             ATK_PERCENT = 'Сила атаки'
             DEFENCE_PERCENT = "Защита"
@@ -186,7 +204,7 @@ class RuLocalization(BaseLocalization):
             HEAL_BONUS = "Бонус лечения"
             ELEMENTAL_DAMAGE = "Бонус {} урона"
 
-        class ArtifactSet(enum.StrEnum):
+        class ArtifactSet(BaseLocalization.Artifacts.ArtifactSet):
             GLADIATORS_FINALE = "Конец гладиатора"
             WANDERERS_TROUPE = "Странствующий ансамбль"
             NOBLESSE_OBLIGE = "Церемония древней знати"

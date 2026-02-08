@@ -12,14 +12,14 @@ class KeyboardEnums(enum.Enum):
     REROLL = "reroll"
 
 
-class ReplyKeyboardEnums(enum.StrEnum):
-    ARTIFACTS = localization_enum.Keyboards.ROLL_ARTIFACTS.value
-    CHANGE_SET = localization_enum.Keyboards.CHANGE_ARTIFACT_SET.value
-    CHANGE_TYPE = localization_enum.Keyboards.CHANGE_ARTIFACT_TYPE.value
+class ReplyKeyboardEnums(enum.Enum):
+    ARTIFACTS = localization_enum.Keyboards.ROLL_ARTIFACTS
+    CHANGE_SET = localization_enum.Keyboards.CHANGE_ARTIFACT_SET
+    CHANGE_TYPE = localization_enum.Keyboards.CHANGE_ARTIFACT_TYPE
 
-    FORCE_MAIN_STAT = localization_enum.Keyboards.SET_FORCED_MAINSTAT.value
-    FORCE_SUB_STAT = localization_enum.Keyboards.SET_FORCED_SUBSTAT.value
-    FORCE_SUB_STAT_LUCK = localization_enum.Keyboards.SET_FORCED_SUBSTAT_LUCK.value
+    FORCE_MAIN_STAT = localization_enum.Keyboards.SET_FORCED_MAINSTAT
+    FORCE_SUB_STAT = localization_enum.Keyboards.SET_FORCED_SUBSTAT
+    FORCE_SUB_STAT_LUCK = localization_enum.Keyboards.SET_FORCED_SUBSTAT_LUCK
 
 
 class ColorsEnums(enum.Enum):
@@ -33,13 +33,14 @@ class ColorsEnums(enum.Enum):
 
 
 class ArtifactLuck(enum.Enum):
-    WORST_LUCK = localization_enum.Keyboards.WORST_LUCK.value
-    AVERAGE_LUCK = localization_enum.Keyboards.AVERAGE_LUCK.value
-    GOOD_LUCK = localization_enum.Keyboards.GOOD_LUCK.value
-    BEST_LUCK = localization_enum.Keyboards.BEST_LUCK.value
+    WORST_LUCK = localization_enum.Keyboards.WORST_LUCK
+    AVERAGE_LUCK = localization_enum.Keyboards.AVERAGE_LUCK
+    GOOD_LUCK = localization_enum.Keyboards.GOOD_LUCK
+    BEST_LUCK = localization_enum.Keyboards.BEST_LUCK
 
 
 class PaginatorEnums(enum.Enum):
-    ARTIFACT_SET_PREV = "prev_artifact_sets_"
-    ARTIFACT_SET_NEXT = "next_artifact_sets_"
+    ARTIFACT_SET = "set_artifact_set"
+    ARTIFACT_MAIN_STAT = "set_main_stat"
+    ARTIFACT_SUB_STAT = "set_sub_stat"
 

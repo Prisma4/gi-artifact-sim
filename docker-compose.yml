@@ -3,3 +3,4 @@ services:
     build: /backend
     environment:
       BOT_TOKEN: $BOT_TOKEN
+      BOT_LANGUAGE: $BOT_LANGUAGE
