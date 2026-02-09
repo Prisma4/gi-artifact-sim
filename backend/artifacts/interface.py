@@ -1,8 +1,8 @@
 import random
-from typing import List, Tuple, Dict, Type, Literal, Optional
+from typing import List, Tuple, Dict, Type, Literal, Optional, Union
 
 from artifacts.constants import ArtifactType, Stat, PercentStat, ArtifactValueType, ArtifactSet
-from artifacts.models import ArtifactSubStat, Artifact, ArtifactMainStat
+from artifacts.models import ArtifactSubStat, Artifact, ArtifactMainStat, ProcLog
 
 from localization.localization_data import BaseLocalization
 from localization.interface import Localization
@@ -147,8 +147,8 @@ class ArtifactValueInterface:
     @classmethod
     def _get_sub_stats(
             cls,
-            main_stat: Stat | PercentStat,
-            forced: Optional[Stat | PercentStat] = None,
+            main_stat: Union[Stat, PercentStat],
+            forced: Optional[Union[Stat, PercentStat]] = None,
             substats_amount: int = 4
     ) -> List[Stat | PercentStat]:
         possible_stats = cls._possible_sub_stats.copy()
@@ -173,7 +173,7 @@ class ArtifactValueInterface:
     @classmethod
     def get_substat_value(
             cls,
-            substat: Stat | PercentStat,
+            substat: Union[Stat, PercentStat],
             forced_value_luck: Optional[Literal[0, 1, 2, 3]] = None,
     ) -> float:
         possible_values = cls._possible_substat_values[substat]
@@ -186,7 +186,7 @@ class ArtifactValueInterface:
         return value
 
     @staticmethod
-    def _count_main_stat(
+    def count_main_stat(
             base_value: float,
             max_value: float,
             level: int = 0
@@ -196,9 +196,9 @@ class ArtifactValueInterface:
     @classmethod
     def _get_substats_values(
             cls,
-            substats: List[Stat | PercentStat],
+            substats: List[Union[Stat, PercentStat]],
             forced_luck: Optional[Literal[0, 1, 2, 3]] = None
-    ) -> Dict[Stat | PercentStat, float]:
+    ) -> Dict[Union[Stat, PercentStat], float]:
         substat_dict = {}
 
         for substat in substats:
@@ -210,8 +210,8 @@ class ArtifactValueInterface:
     def _get_artifact_main_stat(
             cls,
             artifact_type: ArtifactType,
-            forced_main_stat: Stat | PercentStat = None
-    ) -> Stat | PercentStat:
+            forced_main_stat: Optional[Union[Stat, PercentStat]] = None
+    ) -> Union[Stat, PercentStat]:
         possible_values = cls._possible_main_stats[artifact_type]
         value = random.choice(possible_values)
 
@@ -230,15 +230,15 @@ class ArtifactValueInterface:
         min_value = cls._main_stat_values[main_stat][ArtifactValueType.MIN]
         max_value = cls._main_stat_values[main_stat][ArtifactValueType.MAX]
 
-        value = cls._count_main_stat(min_value, max_value, artifact_level)
+        value = cls.count_main_stat(min_value, max_value, artifact_level)
         return value
 
     @classmethod
     def generate_artifact(
             cls,
             artifact_type: ArtifactType,
-            forced_main_stat: Optional[Stat | PercentStat] = None,
-            forced_sub_stat: Optional[Stat | PercentStat] = None,
+            forced_main_stat: Optional[Union[Stat, PercentStat]] = None,
+            forced_sub_stat: Optional[Union[Stat, PercentStat]] = None,
             forced_substat_luck: Optional[Literal[0, 1, 2, 3]] = None
     ) -> Tuple[Stat | PercentStat, float, Dict[Stat | PercentStat, int | float]]:
         main_stat = cls._get_artifact_main_stat(artifact_type, forced_main_stat)
@@ -266,11 +266,11 @@ class ArtifactInterface:
             cls,
             artifact_type: ArtifactType = ArtifactType.FLOWER_OF_LIFE,
             artifact_set: ArtifactSet = ArtifactSet.GLADIATORS_FINALE,
-            forced_main_stat: Stat | PercentStat = None,
-            forced_sub_stat: Stat | PercentStat = None,
+            forced_main_stat: Optional[Union[Stat, PercentStat]] = None,
+            forced_sub_stat: Optional[Union[Stat, PercentStat]] = None,
             forced_sub_stat_luck: Optional[Literal[0, 1, 2, 3]] = None,
             force_fourth_stat: bool = False,
-    ):
+    ) -> Artifact:
         main_stat, main_stat_value, substats = ArtifactValueInterface.generate_artifact(
             artifact_type=artifact_type,
             forced_main_stat=forced_main_stat,
@@ -306,25 +306,35 @@ class ArtifactInterface:
             name=cls._get_artifact_name(artifact_type, artifact_set),
             type=artifact_type,
             main_stat=main_stat_obj,
-            sub_stats=substat_objs,
+            substats=substat_objs,
             set=artifact_set,
         )
 
         return artifact_obj
 
+    @staticmethod
+    def generate_proc_log(
+            substat: ArtifactSubStat,
+            increased_by: float
+    ) -> ProcLog:
+        return ProcLog(
+            substat=substat,
+            increased_by=increased_by,
+        )
+
     @classmethod
     def raise_artifact_level(
             cls,
             artifact: Artifact,
-            forced_substat: Stat | PercentStat = None,
+            forced_substat: Optional[Union[Stat, PercentStat]] = None,
             forced_substat_luck: Optional[Literal[0, 1, 2, 3]] = None
-    ) -> Tuple[ArtifactSubStat | None, float | None]:
+    ) -> Tuple[Optional[ArtifactSubStat], Optional[float]]:
         artifact.level += 1
         artifact.main_stat.value = ArtifactValueInterface.get_artifact_main_stat_value(artifact.main_stat.stat,
                                                                                        artifact.level)
 
         if artifact.level % 4 == 0:
-            inactive_substats = [s for s in artifact.sub_stats if not s.is_active]
+            inactive_substats = [s for s in artifact.substats if not s.is_active]
 
             if inactive_substats:
                 substat_to_activate: ArtifactSubStat = random.choice(inactive_substats)
@@ -332,25 +342,22 @@ class ArtifactInterface:
 
                 return substat_to_activate, substat_to_activate.value
             else:
+                matching_substat = None
                 if forced_substat is not None:
-                    matching_sub_stat = next(
-                        (sub_stat for sub_stat in artifact.sub_stats if sub_stat.stat == forced_substat), None)
-                    if matching_sub_stat is not None:
-                        if forced_substat_luck in [0, 1, 2, 3]:
-                            increase_value = ArtifactValueInterface.get_substat_value(forced_substat,
-                                                                                      forced_substat_luck)
-                        else:
-                            increase_value = ArtifactValueInterface.get_substat_value(forced_substat)
-                        matching_sub_stat.value += increase_value
-                        return matching_sub_stat, increase_value
+                    matching_substat = next(
+                        (sub_stat for sub_stat in artifact.substats if sub_stat.stat == forced_substat), None)
 
-                chosen_substat: ArtifactSubStat = random.choice(artifact.sub_stats)
+                if matching_substat:
+                    chosen_substat: ArtifactSubStat = matching_substat
+                else:
+                    chosen_substat: ArtifactSubStat = random.choice(artifact.substats)
+
                 increase_value = ArtifactValueInterface.get_substat_value(
                     substat=chosen_substat.stat,
                     forced_value_luck=forced_substat_luck
                 )
-
                 chosen_substat.value += increase_value
+                artifact.logs.append(cls.generate_proc_log(substat=chosen_substat, increased_by=increase_value))
 
                 return chosen_substat, increase_value
 

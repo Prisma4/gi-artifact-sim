@@ -104,6 +104,10 @@ class InlineKeyboards:
                 base_keyboard,
             ]
         else:
-            keyboard = [base_keyboard]
+            keyboard = [
+                [InlineKeyboardButton(text=localization.Keyboards.SHOW_PROC_HISTORY,
+                                      callback_data=KeyboardEnums.SHOW_PROC_HISTORY.value)],
+                base_keyboard,
+            ]
 
         return InlineKeyboardMarkup(inline_keyboard=keyboard)

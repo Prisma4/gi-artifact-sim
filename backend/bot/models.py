@@ -10,6 +10,7 @@ localization: Type[BaseLocalization] = Localization.get_localization()
 class KeyboardEnums(enum.Enum):
     ARTIFACT_LEVEL_UP = "level up"
     REROLL = "reroll"
+    SHOW_PROC_HISTORY = "proc history"
 
 
 class ReplyKeyboardEnums(enum.Enum):

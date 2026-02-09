@@ -27,6 +27,8 @@ class BaseLocalization:
         PAGINATION_NEXT = "Next page"
         PAGINATION_PREVIOUS = "Previous page"
 
+        SHOW_PROC_HISTORY = "Show proc history"
+
     class Messages:
         START_MESSAGE = "Welcome to the Artifact Simulator, {}! \nCreator - @Prisma4"
         ARTIFACT_CHOOSE_TYPE = "Choose artifact type:"
@@ -37,6 +39,7 @@ class BaseLocalization:
         SOMETHING_WENT_WRONG_SPECIFIED = "Something went wrong: {}"
         ARTIFACT_NOT_FOUND = "Artifact not found!"
         ARTIFACT_SUBSTAT_WAS_INCREASED = "{} was increased by {}!"
+
         CHOOSE_FORCED_SUBSTAT = "Choose forced substat:"
         CHOOSE_FORCED_SUBSTAT_LUCK = "Choose forced substat luck:"
         CHOOSE_FORCED_MAINSTAT = "Choose forced main stat:"
@@ -156,6 +159,8 @@ class RuLocalization(BaseLocalization):
 
         PAGINATION_NEXT = "Следующая страница"
         PAGINATION_PREVIOUS = "Предыдущая страница"
+
+        SHOW_PROC_HISTORY = "Показать историю проков"
 
     class Messages(BaseLocalization.Messages):
         START_MESSAGE = "Добро пожаловать в симулятор артефактов, {}! \nСоздатель бота - @Prisma4"

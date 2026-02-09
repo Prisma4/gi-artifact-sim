@@ -12,7 +12,6 @@ from bot.handlers.base import logger, localization
 from bot.keyboards.kb import InlineKeyboards
 from bot.models import ReplyKeyboardEnums, KeyboardEnums
 
-
 router = Router()
 
 
@@ -36,6 +35,16 @@ async def generate_artifact_image_from_state(state: FSMContext):
     await state.update_data(artifact_obj=artifact_obj)
 
     return await ArtifactImageGenerator.generate_artifact_image(artifact_obj)
+
+
+def generate_proc_history(
+        artifact: Artifact
+) -> str:
+    title = ""
+    if isinstance(artifact.logs, list):
+        for i, proc_log in enumerate(artifact.logs):
+            title += f"{i+1} - " + str(proc_log.substat.stat.value) + ": " + str(proc_log.increased_by) + "\n"
+    return title
 
 
 @router.message(F.text == ReplyKeyboardEnums.ARTIFACTS.value)
@@ -81,7 +90,9 @@ async def handle_artifact_level_up(call: types.CallbackQuery, state: FSMContext)
         if artifact_obj is None:
             raise ValueError("Artifact object was not found in the state")
 
-        if artifact_obj.level >= 20:
+        is_max_level: bool = True if artifact_obj.level >= 20 else False
+
+        if is_max_level:
             raise ValueError("Artifact level is already max")
 
         forced_sub_stat: Optional[Stat | PercentStat] = state_data.get('forced_sub_stat', None)
@@ -101,12 +112,37 @@ async def handle_artifact_level_up(call: types.CallbackQuery, state: FSMContext)
 
         artifact_image = await ArtifactImageGenerator.generate_artifact_image(artifact_obj)
 
+        is_max_level: bool = True if artifact_obj.level >= 20 else False
+
         await call.message.edit_media(
-            reply_markup=InlineKeyboards.get_artifact_keyboard(
-                is_max_level=True if artifact_obj.level >= 20 else False),
+            reply_markup=InlineKeyboards.get_artifact_keyboard(is_max_level=is_max_level),
             media=InputMediaPhoto(media=BufferedInputFile(artifact_image, filename="artifact.png"))
         )
-        await call.answer()
+    except Exception as e:
+        logger.exception(e)
+        await call.answer(
+            text=localization.Messages.SOMETHING_WENT_WRONG,
+        )
+
+
+@router.callback_query(F.data == KeyboardEnums.SHOW_PROC_HISTORY.value)
+async def show_proc_history(call: types.CallbackQuery, state: FSMContext):
+    try:
+        state_data = await state.get_data()
+        artifact_obj: Artifact = state_data.get('artifact_obj')
+
+        if artifact_obj is None:
+            raise ValueError("Artifact object was not found in the state")
+
+        is_max_level: bool = True if artifact_obj.level >= 20 else False
+
+        if not is_max_level:
+            raise ValueError("Artifact level is not max")
+
+        await call.answer(
+            text=generate_proc_history(artifact=artifact_obj)[:200],
+            show_alert=True,
+        )
     except Exception as e:
         logger.exception(e)
         await call.answer(

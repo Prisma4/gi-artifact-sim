@@ -84,7 +84,7 @@ class ArtifactImageGenerator:
             anchor='mm'
         )
 
-        for i, substat in enumerate(artifact.sub_stats):  # rendering substats
+        for i, substat in enumerate(artifact.substats):  # rendering substats
             position = (24, 256 + (i * 25))
             text = cls.get_substat_value_str(substat)
             substat_font = ImageFont.truetype(font, 17)

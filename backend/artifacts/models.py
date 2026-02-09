@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -18,10 +18,17 @@ class ArtifactSubStat(BaseModel):
     is_active: bool = True
 
 
+class ProcLog(BaseModel):
+    substat: ArtifactSubStat
+    increased_by: float
+
+
 class Artifact(BaseModel):
     name: str
     type: ArtifactType
     set: ArtifactSet
     main_stat: ArtifactMainStat
-    sub_stats: List[ArtifactSubStat]
+    substats: List[ArtifactSubStat]
     level: int = 0
+
+    logs: List[ProcLog] = []
